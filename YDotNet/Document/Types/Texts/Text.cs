@@ -147,24 +147,17 @@ public class Text : Branch
     /// </summary>
     /// <param name="action">The callback to be executed when a <see cref="Transaction" /> is committed.</param>
     /// <returns>The subscription for the event. It may be used to unsubscribe later.</returns>
-    public EventSubscription Observe(Action<TextEvent> action)
+    public IDisposable Observe(Action<TextEvent> action)
     {
         var subscriptionId = TextChannel.Observe(
             Handle,
             nint.Zero,
             (_, eventHandle) => action(new TextEvent(eventHandle)));
 
-        return new EventSubscription(subscriptionId);
-    }
-
-    /// <summary>
-    ///     Unsubscribes a callback function, represented by an <see cref="EventSubscription" /> instance, for changes
-    ///     performed within <see cref="Text" /> scope.
-    /// </summary>
-    /// <param name="subscription">The subscription that represents the callback function to be unobserved.</param>
-    public void Unobserve(EventSubscription subscription)
-    {
-        TextChannel.Unobserve(Handle, subscription.Id);
+        return new EventSubscription(() =>
+        {
+            TextChannel.Unobserve(Handle, subscriptionId);
+        });
     }
 
     /// <summary>

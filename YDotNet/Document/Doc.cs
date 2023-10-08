@@ -301,25 +301,18 @@ public class Doc : IDisposable
     ///     Subscribes a callback function to be called when the <see cref="Clear" /> method is called.
     /// </summary>
     /// <param name="action">The callback function.</param>
-    /// <returns>The subscription for the event. It may be used to unsubscribe later.</returns>
-    public EventSubscription ObserveClear(Action<ClearEvent> action)
+    /// <returns>The subscription for the event. Call dispose to unsubscribe later.</returns>
+    public IDisposable ObserveClear(Action<ClearEvent> action)
     {
         var subscriptionId = DocChannel.ObserveClear(
             Handle,
             nint.Zero,
             (_, doc) => action(ClearEventNative.From(new Doc(doc)).ToClearEvent()));
 
-        return new EventSubscription(subscriptionId);
-    }
-
-    /// <summary>
-    ///     Unsubscribes a callback function, represented by an <see cref="EventSubscription" /> instance,
-    ///     for the <see cref="Clear" /> method.
-    /// </summary>
-    /// <param name="subscription">The subscription that represents the callback function to be unobserved.</param>
-    public void UnobserveClear(EventSubscription subscription)
-    {
-        DocChannel.UnobserveClear(Handle, subscription.Id);
+        return new EventSubscription(() =>
+        {
+            DocChannel.UnobserveClear(Handle, subscriptionId);
+        });
     }
 
     /// <summary>
@@ -329,25 +322,18 @@ public class Doc : IDisposable
     ///     The updates are encoded using <c>lib0</c> V1 encoding and they can be  passed to remote peers right away.
     /// </remarks>
     /// <param name="action">The callback to be executed when a <see cref="Transaction" /> is committed.</param>
-    /// <returns>The subscription for the event. It may be used to unsubscribe later.</returns>
-    public EventSubscription ObserveUpdatesV1(Action<UpdateEvent> action)
+    /// <returns>The subscription for the event. Call dispose to unsubscribe later.</returns>
+    public IDisposable ObserveUpdatesV1(Action<UpdateEvent> action)
     {
         var subscriptionId = DocChannel.ObserveUpdatesV1(
             Handle,
             nint.Zero,
             (_, length, data) => action(UpdateEventNative.From(length, data).ToUpdateEvent()));
 
-        return new EventSubscription(subscriptionId);
-    }
-
-    /// <summary>
-    ///     Unsubscribes a callback function, represented by an <see cref="EventSubscription" /> instance, for changes
-    ///     performed within <see cref="Transaction" /> scope.
-    /// </summary>
-    /// <param name="subscription">The subscription that represents the callback function to be unobserved.</param>
-    public void UnobserveUpdatesV1(EventSubscription subscription)
-    {
-        DocChannel.UnobserveUpdatesV1(Handle, subscription.Id);
+        return new EventSubscription(() =>
+        {
+            DocChannel.UnobserveUpdatesV1(Handle, subscriptionId);
+        });
     }
 
     /// <summary>
@@ -357,25 +343,18 @@ public class Doc : IDisposable
     ///     The updates are encoded using <c>lib0</c> V1 encoding and they can be  passed to remote peers right away.
     /// </remarks>
     /// <param name="action">The callback to be executed when a <see cref="Transaction" /> is committed.</param>
-    /// <returns>The subscription for the event. It may be used to unsubscribe later.</returns>
-    public EventSubscription ObserveUpdatesV2(Action<UpdateEvent> action)
+    /// <returns>The subscription for the event. Call dispose to unsubscribe later.</returns>
+    public IDisposable ObserveUpdatesV2(Action<UpdateEvent> action)
     {
         var subscriptionId = DocChannel.ObserveUpdatesV2(
             Handle,
             nint.Zero,
             (_, length, data) => action(UpdateEventNative.From(length, data).ToUpdateEvent()));
 
-        return new EventSubscription(subscriptionId);
-    }
-
-    /// <summary>
-    ///     Unsubscribes a callback function, represented by an <see cref="EventSubscription" /> instance, for changes
-    ///     performed within <see cref="Transaction" /> scope.
-    /// </summary>
-    /// <param name="subscription">The subscription that represents the callback function to be unobserved.</param>
-    public void UnobserveUpdatesV2(EventSubscription subscription)
-    {
-        DocChannel.UnobserveUpdatesV2(Handle, subscription.Id);
+        return new EventSubscription(() =>
+        {
+            DocChannel.UnobserveUpdatesV2(Handle, subscriptionId);
+        });
     }
 
     /// <summary>
@@ -385,49 +364,35 @@ public class Doc : IDisposable
     ///     The updates are encoded using <c>lib0</c> V1 encoding and they can be  passed to remote peers right away.
     /// </remarks>
     /// <param name="action">The callback to be executed when a <see cref="Transaction" /> is committed.</param>
-    /// <returns>The subscription for the event. It may be used to unsubscribe later.</returns>
-    public EventSubscription ObserveAfterTransaction(Action<AfterTransactionEvent> action)
+    /// <returns>The subscription for the event. Call dispose to unsubscribe later.</returns>
+    public IDisposable ObserveAfterTransaction(Action<AfterTransactionEvent> action)
     {
         var subscriptionId = DocChannel.ObserveAfterTransaction(
             Handle,
             nint.Zero,
             (_, eventHandler) => action(MemoryReader.ReadStruct<AfterTransactionEventNative>(eventHandler).ToAfterTransactionEvent()));
 
-        return new EventSubscription(subscriptionId);
-    }
-
-    /// <summary>
-    ///     Unsubscribes a callback function, represented by an <see cref="EventSubscription" /> instance, for changes
-    ///     performed within <see cref="Transaction" /> scope.
-    /// </summary>
-    /// <param name="subscription">The subscription that represents the callback function to be unobserved.</param>
-    public void UnobserveAfterTransaction(EventSubscription subscription)
-    {
-        DocChannel.UnobserveAfterTransaction(Handle, subscription.Id);
+        return new EventSubscription(() =>
+        {
+            DocChannel.UnobserveAfterTransaction(Handle, subscriptionId);
+        });
     }
 
     /// <summary>
     ///     Subscribes a callback function for changes in the sub-documents.
     /// </summary>
     /// <param name="action">The callback to be executed when a sub-document changes.</param>
-    /// <returns>The subscription for the event. It may be used to unsubscribe later.</returns>
-    public EventSubscription ObserveSubDocs(Action<SubDocsEvent> action)
+    /// <returns>The subscription for the event. Call dispose to unsubscribe later.</returns>
+    public IDisposable ObserveSubDocs(Action<SubDocsEvent> action)
     {
         var subscriptionId = DocChannel.ObserveSubDocs(
             Handle,
             nint.Zero,
             (_, eventHandle) => action(MemoryReader.ReadStruct<SubDocsEventNative>(eventHandle).ToSubDocsEvent()));
 
-        return new EventSubscription(subscriptionId);
-    }
-
-    /// <summary>
-    ///     Unsubscribes a callback function, represented by an <see cref="EventSubscription" /> instance, for changes
-    ///     performed in the sub-documents.
-    /// </summary>
-    /// <param name="subscription">The subscription that represents the callback function to be unobserved.</param>
-    public void UnobserveSubDocs(EventSubscription subscription)
-    {
-        DocChannel.UnobserveSubDocs(Handle, subscription.Id);
+        return new EventSubscription(() => 
+        {
+            DocChannel.UnobserveSubDocs(Handle, subscriptionId);
+        });
     }
 }

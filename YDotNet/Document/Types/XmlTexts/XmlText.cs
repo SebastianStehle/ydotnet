@@ -224,25 +224,18 @@ public class XmlText : Branch
     ///     The callbacks are triggered whenever a <see cref="Transaction" /> is committed.
     /// </remarks>
     /// <param name="action">The callback to be executed when a <see cref="Transaction" /> is committed.</param>
-    /// <returns>The subscription for the event. It may be used to unsubscribe later.</returns>
-    public EventSubscription Observe(Action<XmlTextEvent> action)
+    /// <returns>The subscription for the event. Call Dispose to unsubscribe later.</returns>
+    public IDisposable Observe(Action<XmlTextEvent> action)
     {
         var subscriptionId = XmlTextChannel.Observe(
             Handle,
             nint.Zero,
             (_, eventHandle) => action(new XmlTextEvent(eventHandle)));
 
-        return new EventSubscription(subscriptionId);
-    }
-
-    /// <summary>
-    ///     Unsubscribes a callback function, represented by an <see cref="EventSubscription" /> instance, that
-    ///     was subscribed via <see cref="Observe" />.
-    /// </summary>
-    /// <param name="subscription">The subscription that represents the callback function to be unobserved.</param>
-    public void Unobserve(EventSubscription subscription)
-    {
-        XmlTextChannel.Unobserve(Handle, subscription.Id);
+        return new EventSubscription(() =>
+        {
+            XmlTextChannel.Unobserve(Handle, subscriptionId);
+        });
     }
 
     /// <summary>

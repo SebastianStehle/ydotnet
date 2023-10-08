@@ -42,7 +42,6 @@ public class ObserveTests
         transaction.Commit();
 
         // Assert
-        Assert.That(subscription.Id, Is.EqualTo(expected: 0L));
         Assert.That(eventChanges, Is.Not.Null);
         Assert.That(eventChanges.Length, Is.EqualTo(expected: 1));
         Assert.That(eventChanges.First().Tag, Is.EqualTo(EventChangeTag.Add));
@@ -76,7 +75,6 @@ public class ObserveTests
         transaction.Commit();
 
         // Assert
-        Assert.That(subscription.Id, Is.EqualTo(expected: 0L));
         Assert.That(eventChanges, Is.Not.Null);
         Assert.That(eventChanges.Length, Is.EqualTo(expected: 1));
         Assert.That(eventChanges.First().Tag, Is.EqualTo(EventChangeTag.Remove));
@@ -110,7 +108,6 @@ public class ObserveTests
         transaction.Commit();
 
         // Assert
-        Assert.That(subscription.Id, Is.EqualTo(expected: 0L));
         Assert.That(eventChanges, Is.Not.Null);
         Assert.That(eventChanges.Length, Is.EqualTo(expected: 3));
 

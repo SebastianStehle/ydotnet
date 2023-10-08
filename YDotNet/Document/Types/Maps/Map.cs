@@ -115,24 +115,17 @@ public class Map : Branch
     ///     The callbacks are triggered whenever a <see cref="Transaction" /> is committed.
     /// </remarks>
     /// <param name="action">The callback to be executed when a <see cref="Transaction" /> is committed.</param>
-    /// <returns>The subscription for the event. It may be used to unsubscribe later.</returns>
-    public EventSubscription Observe(Action<MapEvent> action)
+    /// <returns>The subscription for the event. Call Dispose to unsubscribe later.</returns>
+    public IDisposable Observe(Action<MapEvent> action)
     {
         var subscriptionId = MapChannel.Observe(
             Handle,
             nint.Zero,
             (_, eventHandle) => action(new MapEvent(eventHandle)));
 
-        return new EventSubscription(subscriptionId);
-    }
-
-    /// <summary>
-    ///     Unsubscribes a callback function, represented by an <see cref="EventSubscription" /> instance, for changes
-    ///     performed within <see cref="Map" /> scope.
-    /// </summary>
-    /// <param name="subscription">The subscription that represents the callback function to be unobserved.</param>
-    public void Unobserve(EventSubscription subscription)
-    {
-        MapChannel.Unobserve(Handle, subscription.Id);
+        return new EventSubscription(() =>
+        {
+            MapChannel.Unobserve(Handle, subscriptionId);
+        });
     }
 }

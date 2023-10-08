@@ -40,7 +40,7 @@ public class ArrayObserveDeepTests
         IEnumerable<EventPathSegment>? pathSegments = null;
         var called = 0;
 
-        var subscription = array1.ObserveDeep(
+        using var subscription = array1.ObserveDeep(
             events =>
             {
                 called++;
@@ -63,8 +63,6 @@ public class ArrayObserveDeepTests
         Assert.That(pathSegments.ElementAt(index: 1).Tag, Is.EqualTo(EventPathSegmentTag.Key));
         Assert.That(pathSegments.ElementAt(index: 1).Key, Is.EqualTo("array-3"));
         Assert.That(pathSegments.ElementAt(index: 1).Index, Is.Null);
-
-        array1.UnobserveDeep(subscription);
     }
 
     [Test]
@@ -107,7 +105,7 @@ public class ArrayObserveDeepTests
         IEnumerable<EventPathSegment>? pathSegments = null;
         var called = 0;
 
-        var subscription = array1.ObserveDeep(
+        using var subscription = array1.ObserveDeep(
             events =>
             {
                 called++;
@@ -129,7 +127,5 @@ public class ArrayObserveDeepTests
         Assert.That(pathSegments.ElementAt(index: 1).Tag, Is.EqualTo(EventPathSegmentTag.Index));
         Assert.That(pathSegments.ElementAt(index: 1).Index, Is.EqualTo(expected: 3));
         Assert.That(pathSegments.ElementAt(index: 1).Key, Is.Null);
-
-        array1.UnobserveDeep(subscription);
     }
 }

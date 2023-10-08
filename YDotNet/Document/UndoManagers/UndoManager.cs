@@ -44,25 +44,18 @@ public class UndoManager : IDisposable
     ///     has been called.
     /// </summary>
     /// <param name="action">The callback to be executed when an update happens, respecting the capture timeout.</param>
-    /// <returns>The subscription for the event. It may be used to unsubscribe later.</returns>
-    public EventSubscription ObserveAdded(Action<UndoEvent> action)
+    /// <returns>The subscription for the event. Call Dispose to unsubscribe later.</returns>
+    public IDisposable ObserveAdded(Action<UndoEvent> action)
     {
         var subscriptionId = UndoManagerChannel.ObserveAdded(
             Handle,
             nint.Zero,
             (_, undoEvent) => action(undoEvent.ToUndoEvent()));
 
-        return new EventSubscription(subscriptionId);
-    }
-
-    /// <summary>
-    ///     Unsubscribes a callback function, represented by an <see cref="EventSubscription" /> instance, previously
-    ///     registered via <see cref="ObserveAdded" />.
-    /// </summary>
-    /// <param name="subscription">The subscription that represents the callback function to be unobserved.</param>
-    public void UnobserveAdded(EventSubscription subscription)
-    {
-        UndoManagerChannel.UnobserveAdded(Handle, subscription.Id);
+        return new EventSubscription(() =>
+        {
+            UndoManagerChannel.UnobserveAdded(Handle, subscriptionId);
+        });
     }
 
     /// <summary>
@@ -70,25 +63,18 @@ public class UndoManager : IDisposable
     ///     and removes items from the history of changes.
     /// </summary>
     /// <param name="action">The callback to be executed when <see cref="Undo" /> or <see cref="Redo" /> is executed.</param>
-    /// <returns>The subscription for the event. It may be used to unsubscribe later.</returns>
-    public EventSubscription ObservePopped(Action<UndoEvent> action)
+    /// <returns>The subscription for the event. Call Dispose to unsubscribe later.</returns>
+    public IDisposable ObservePopped(Action<UndoEvent> action)
     {
         var subscriptionId = UndoManagerChannel.ObservePopped(
             Handle,
             nint.Zero,
             (_, undoEvent) => action(undoEvent.ToUndoEvent()));
 
-        return new EventSubscription(subscriptionId);
-    }
-
-    /// <summary>
-    ///     Unsubscribes a callback function, represented by an <see cref="EventSubscription" /> instance, previously
-    ///     registered via <see cref="ObservePopped" />.
-    /// </summary>
-    /// <param name="subscription">The subscription that represents the callback function to be unobserved.</param>
-    public void UnobservePopped(EventSubscription subscription)
-    {
-        UndoManagerChannel.UnobservePopped(Handle, subscription.Id);
+        return new EventSubscription(() =>
+        {
+            UndoManagerChannel.UnobservePopped(Handle, subscriptionId);
+        });
     }
 
     /// <summary>

@@ -53,7 +53,6 @@ public class ObserveTests
         var firstKey = keyChanges.First();
 
         Assert.That(called, Is.EqualTo(expected: 1));
-        Assert.That(subscription.Id, Is.EqualTo(expected: 0L));
         Assert.That(keyChanges, Is.Not.Null);
         Assert.That(keyChanges.Count(), Is.EqualTo(expected: 1));
         Assert.That(firstKey.Key, Is.EqualTo("moon-🌕"));
@@ -93,7 +92,6 @@ public class ObserveTests
 
         Assert.That(removed, Is.True);
         Assert.That(called, Is.EqualTo(expected: 1));
-        Assert.That(subscription.Id, Is.EqualTo(expected: 0L));
         Assert.That(keyChanges, Is.Not.Null);
         Assert.That(keyChanges.Count(), Is.EqualTo(expected: 1));
         Assert.That(firstKey.Key, Is.EqualTo("value"));
@@ -132,7 +130,6 @@ public class ObserveTests
         var firstKey = keyChanges.First();
 
         Assert.That(called, Is.EqualTo(expected: 1));
-        Assert.That(subscription.Id, Is.EqualTo(expected: 0L));
         Assert.That(keyChanges, Is.Not.Null);
         Assert.That(keyChanges.Count(), Is.EqualTo(expected: 1));
         Assert.That(firstKey.Key, Is.EqualTo("value"));
@@ -171,7 +168,6 @@ public class ObserveTests
         var firstKey = keyChanges.First();
 
         Assert.That(called, Is.EqualTo(expected: 1));
-        Assert.That(subscription.Id, Is.EqualTo(expected: 0L));
         Assert.That(keyChanges, Is.Not.Null);
         Assert.That(keyChanges.Count(), Is.EqualTo(expected: 1));
         Assert.That(firstKey.Key, Is.EqualTo("value"));
@@ -215,7 +211,6 @@ public class ObserveTests
 
         // Assert
         Assert.That(called, Is.EqualTo(expected: 1));
-        Assert.That(subscription.Id, Is.EqualTo(expected: 0L));
         Assert.That(keyChanges, Is.Not.Null);
         Assert.That(keyChanges.Count(), Is.EqualTo(expected: 3));
         Assert.That(keyChanges.Count(x => x.Tag == EventKeyChangeTag.Update), Is.EqualTo(expected: 1));

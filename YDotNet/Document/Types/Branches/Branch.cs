@@ -35,8 +35,8 @@ public abstract class Branch
     ///     The callbacks are triggered whenever a <see cref="Transaction" /> is committed.
     /// </remarks>
     /// <param name="action">The callback to be executed when a <see cref="Transaction" /> is committed.</param>
-    /// <returns>The subscription for the event. It may be used to unsubscribe later.</returns>
-    public EventSubscription ObserveDeep(Action<IEnumerable<EventBranch>> action)
+    /// <returns>The subscription for the event. Call Dispose to unsubscribe later.</returns>
+    public IDisposable ObserveDeep(Action<IEnumerable<EventBranch>> action)
     {
         var subscriptionId = BranchChannel.ObserveDeep(
             Handle,
@@ -50,17 +50,10 @@ public abstract class Branch
                 action(events);
             });
 
-        return new EventSubscription(subscriptionId);
-    }
-
-    /// <summary>
-    ///     Unsubscribes a callback function, represented by an <see cref="EventSubscription" /> instance, for changes
-    ///     performed within <see cref="Branch" /> scope.
-    /// </summary>
-    /// <param name="subscription">The subscription that represents the callback function to be unobserved.</param>
-    public void UnobserveDeep(EventSubscription subscription)
-    {
-        BranchChannel.UnobserveDeep(Handle, subscription.Id);
+        return new EventSubscription(() =>
+        {
+            BranchChannel.UnobserveDeep(Handle, subscriptionId);
+        });
     }
 
     /// <summary>

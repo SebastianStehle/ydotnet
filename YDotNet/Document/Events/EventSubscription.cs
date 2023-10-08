@@ -1,21 +1,16 @@
 namespace YDotNet.Document.Events;
 
-/// <summary>
-///     Represents a subscription to an event of <see cref="Doc" />.
-/// </summary>
-public class EventSubscription
+internal sealed class EventSubscription : IDisposable
 {
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="EventSubscription" /> class.
-    /// </summary>
-    /// <param name="id">The ID used to identify this instance of <see cref="EventSubscription" />.</param>
-    internal EventSubscription(uint id)
+    private readonly Action unsubscribe;
+
+    internal EventSubscription(Action unsubscribe)
     {
-        Id = id;
+        this.unsubscribe = unsubscribe;
     }
 
-    /// <summary>
-    ///     Gets the ID used to identify this subscription in the document.
-    /// </summary>
-    public uint Id { get; }
+    public void Dispose()
+    {
+        this.unsubscribe();
+    }
 }
